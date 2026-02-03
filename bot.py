@@ -60,7 +60,7 @@ async def delete_media(message: Message):
         await message.delete()
         msg = f"Deleted {media_type} | user={message.from_user.id} | chat={message.chat.id}"
         logging.info(msg)
-        notify_admin(msg)
+        await notify_admin(msg)
     except Exception as e:
         logging.error(f"Failed to delete {media_type}: {e}")
 
