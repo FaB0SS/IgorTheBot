@@ -50,14 +50,20 @@ async def notify_admin(text: str):
 bot = Bot(BOT_TOKEN)
 dp = Dispatcher()
 
-# ----------------- Photo handler -----------------
-@dp.message(lambda m: m.from_user and m.from_user.id in blocked_users and m.content_type == ContentType.PHOTO)
-async def delete_photo(message: Message):
+# ----------------- Media handler -----------------
+@dp.message(lambda m: m.from_user 
+            and m.from_user.id in blocked_users 
+            and m.content_type in (ContentType.PHOTO, ContentType.VIDEO, ContentType.ANIMATION))
+async def delete_media(message: Message):
+    media_type = message.content_type.value  # photo, video або animation
     try:
         await message.delete()
-        logging.info(f"Deleted photo | user={message.from_user.id} | chat={message.chat.id}")
+        msg = f"Deleted {media_type} | user={message.from_user.id} | chat={message.chat.id}"
+        logging.info(msg)
+        notify_admin(msg)
     except Exception as e:
-        logging.error(f"Delete failed: {e}")
+        logging.error(f"Failed to delete {media_type}: {e}")
+
 
 # ----------------- Commands -----------------
 @dp.message(Command("add_user"))
